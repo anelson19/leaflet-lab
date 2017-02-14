@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Folder><name>MegaCities</name>
+  <Placemark>
+      <Point><coordinates>139.758967,35.682838</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>77.221939,28.651718</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>121.488892,31.225344</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>-100.445882,39.78373</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>72.832711,18.95238</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>-100.445882,39.78373</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>116.391248,39.905963</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>-100.445882,39.78373</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>31.243666,30.048819</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>-74.159239,40.681968</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>90.378814,23.759357</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>67.031129,24.86678</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>-58.445979,-34.612869</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>88.347602,22.567746</coordinates></Point>
+  </Placemark>
+  <Placemark>
+      <Point><coordinates>28.965165,41.009633</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
