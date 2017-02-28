@@ -1,0 +1,51 @@
+<html>
+      <head>
+        <meta charset="UTF-8">
+        <title>README.md</title>
+      </head>
+      <body>
+        <h1 id="leaflet-control-search">Leaflet Control Search</h1>
+<p><a href="http://badge.fury.io/js/leaflet-search"><img src="https://badge.fury.io/js/leaflet-search.svg" alt="npm version"></a></p>
+<p>A Leaflet control that search markers/features location by custom property.<br />
+Support ajax/jsonp autocompletion and JSON data filter/remapping.</p>
+<p><em>Copyright 2016 <a href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></em></p>
+<p>Tested in Leaflet 0.7.7,1.0</p>
+<p><img src="https://raw.githubusercontent.com/stefanocudini/leaflet-search/master/images/leaflet-search.jpg" alt="Image"></p>
+<p>#Where</p>
+<p><strong>Demo:</strong><br><a href="http://labs.easyblog.it/maps/leaflet-search/">labs.easyblog.it/maps/leaflet-search</a></p>
+<p><strong>Source code:</strong><br><a href="https://github.com/stefanocudini/leaflet-search">Github</a>
+<a href="https://npmjs.org/package/leaflet-search">NPM</a></p>
+<p><strong>Bug tracking:</strong>
+<a href="https://waffle.io/stefanocudini/leaflet-search">Waffle.io</a></p>
+<p><a href="https://github.com/stefanocudini/leaflet-search/wiki/Websites-that-use-Leaflet-Control-Search">Websites that use Leaflet.Control.Search</a></p>
+<p>#Examples
+(require src/leaflet-search.css)</p>
+<p>Adding the search control to the map:</p>
+<pre><code class="lang-javascript">var searchLayer = L.layerGroup().addTo(map);
+//... adding data in searchLayer ...
+map.addControl( new L.Control.Search({layer: searchLayer}) );
+//searchLayer is a L.LayerGroup contains searched markers
+</code></pre>
+<p>Short way:</p>
+<pre><code class="lang-javascript">var searchLayer = L.geoJson().addTo(map);
+//... adding data in searchLayer ...
+L.map(&#39;map&#39;, { searchControl: {layer: searchLayer} });
+</code></pre>
+<p>AMD module:</p>
+<pre><code class="lang-javascript">require([&quot;leaflet&quot;, &quot;leafletSearch&quot;],function(L, LeafletSearch) {
+
+    //... initialize leaflet map and dataLayer ...
+
+    map.addControl( new LeafletSearch({
+        layer: dataLayer
+    }) );
+});
+</code></pre>
+<p>#Build</p>
+<p>Therefore the deployment require <strong>npm</strong> installed in your system.</p>
+<pre><code class="lang-bash">npm install
+grunt
+</code></pre>
+
+      </body>
+    </html>

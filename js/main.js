@@ -11,20 +11,35 @@
 function createMap(){
     //create the map
     var map = L.map('mapid', {
-        center: [20, 0],
-        zoom: 2
+        center: [40, -96],
+        zoom: 5
     });
 
     //add OSM base tilelayer
     L.tileLayer('https://api.mapbox.com/styles/v1/anelson19/ciz4ogflq005o2srz18mlwvsz/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW5lbHNvbjE5IiwiYSI6ImNpdW9mNW93ODAxaW4yeXFtdjdpeGcxN2YifQ.2rI2QCPvKMDET0YyRws9OA', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
     }).addTo(map);
+	
 
     //call getData function
     getData(map);
 };
 
-
+function search(map, data, pointLayer){
+	var controlSearch = new L.Control.Search({
+		position:'topleft', 
+		layer: pointLayer,
+		propertyName:"City",
+		marker: false,
+	moveToLocation: function(latlng, title, map) {
+	//map.fitBounds( latlng.layer.getBounds() );
+		console.log(latlng)
+		//var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+	map.setView(latlng,12); // access the zoom
+	}
+	});
+map.addControl( controlSearch );
+}
 
 //function to retrieve the data and place it on the map
 /*function createPropSymbols(data, map){
@@ -60,7 +75,7 @@ function pointToLayer(feature, latlng, attributes){
     //Determine which attribute to visualize with proportional symbols
     var attribute = attributes[0];
 	//check
-    console.log(attribute);
+    //console.log(attribute);
 
     //create marker options
     var options = {
@@ -104,7 +119,7 @@ function pointToLayer(feature, latlng, attributes){
             $("#panel").html(popupContent);
         }*/
     });
-	
+
 	/*var panelContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
 
     //add formatted attribute to panel content string
@@ -140,16 +155,18 @@ function pointToLayer(feature, latlng, attributes){
 //Add circle markers for point features to the map
 function createPropSymbols(data, map, attributes){
     //create a Leaflet GeoJSON layer and add it to the map
-    L.geoJson(data, {
+    var pointLayer = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             return pointToLayer(feature, latlng, attributes);
         }
     }).addTo(map);
+	
+	search(map, data, pointLayer)
 };
 
 function calcPropRadius(attValue) {
     //scale factor to adjust symbol size evenly
-    var scaleFactor = .01;
+    var scaleFactor = .05;
     //area based on attribute value and scale factor
     var area = attValue * scaleFactor;
     //radius calculated based on area
@@ -160,8 +177,17 @@ function calcPropRadius(attValue) {
 
 function createSequenceControls(map, attributes){
 	$('#panel').append('<input class="range-slider" type="range">');
+	$('.range-slider').attr({
+        max: 6,
+        min: 0,
+        value: 0,
+        step: 1
+    });
 	$('#panel').append('<button class="skip" id="reverse">Reverse</button>');
 	$('#panel').append('<button class="skip" id="forward">Skip</button>');
+	
+	/*$('#reverse').html('<img src="img/arrow_left.png">');
+    $('#forward').html('<img src="img/arrow_right.png">');*/
 
     $('.skip').click(function(){
         //get the old index value
@@ -232,7 +258,7 @@ function processData(data){
     };
 
     //check result
-    console.log(attributes);
+    //console.log(attributes);
 
     return attributes;
 };

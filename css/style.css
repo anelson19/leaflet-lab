@@ -1,5 +1,5 @@
 #mapid { 
-	height: 500px; 
+	height: 800px; 
 	width: 80%;
 	display: inline-block;
 }
@@ -13,16 +13,36 @@
     line-height: 42px;
 }
 
+#title{
+	text-align: center;
+	margin-top:-35px;
+    height: 70px;
+    width: 100%;
+	background-color:black;
+	
+}
+
+h1{
+	font-size:50px;
+	font-family: verdana;
+	color: orange;
+
+}
+
 .range-slider {
     width: 50%;
 }
 
 #forward {
     float: right;
+	padding:8px;
+	border-radius:6px;
 }
 
 #reverse {
     float: left;
+	padding:8px;
+	border-radius:6px;
 }
 
 .leaflet-popup-content p {
@@ -40,3 +60,4 @@ body{
 .mydivclass {
   
 }
+
