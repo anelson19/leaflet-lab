@@ -12,7 +12,7 @@ function createMap(){
     //create the map
     var map = L.map('mapid', {
         center: [40, -96],
-        zoom: 5
+        zoom: 4
     });
 
     //add OSM base tilelayer
@@ -40,6 +40,116 @@ function search(map, data, pointLayer){
 	});
 map.addControl( controlSearch );
 }
+
+	
+function createLegend(map, attributes){
+    var LegendControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+        },
+
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            //PUT YOUR SCRIPT TO CREATE THE TEMPORAL LEGEND HERE
+			//add temporal legend div to container
+            $(container).append('<div id="temporal-legend">')
+
+            //Step 1: start attribute legend svg string
+            var svg = '<svg id="attribute-legend" width="400px" height="200px">';
+			
+			//array of circle names to base loop on
+			var circles = {
+            max: -45,
+            mean: 0,
+            min: 45
+			};
+
+			//Step 2: loop to add each circle and text to svg string
+			for (var circle in circles){
+				//circle string
+				svg += '<circle class="legend-circle" id="' + circle + '" fill="#1E90FF" fill-opacity="0.8" stroke="#0066FF" cx="70"/>';
+
+				//text string
+				svg += '<text id="' + circle + '-text" x="140" y="' + (circles[circle]+100) + '"></text>';
+			};
+
+        //close svg string
+        svg += "</svg>";
+
+            //add attribute legend svg to container
+            $(container).append(svg);
+
+            return container;
+        }
+    });
+
+    map.addControl(new LegendControl());
+	
+	updateLegend(map, attributes[0]);
+};
+
+//Calculate the max, mean, and min values for a given attribute
+function getCircleValues(map, attribute){
+    //start with min at highest possible and max at lowest possible number
+    var min = Infinity,
+        max = -Infinity;
+
+    map.eachLayer(function(layer){
+        //get the attribute value
+        if (layer.feature){
+            var attributeValue = Number(layer.feature.properties[attribute]);
+
+            //test for min
+            if (attributeValue < min){
+                min = attributeValue;
+            };
+
+            //test for max
+            if (attributeValue > max){
+                max = attributeValue;
+            };
+        };
+    });
+
+    //set mean
+    var mean = (max + min) / 2;
+
+    //return values as an object
+    return {
+        max: max,
+        mean: mean,
+        min: min
+    };
+};
+
+//Update the legend with new attribute
+function updateLegend(map, attribute){
+    //create content for legend
+    var year = attribute.split("_")[2];
+    var content = "<b>Enrollment in " + year + "</b>";
+
+    //replace legend content
+    $('#temporal-legend').html(content);
+	
+	//get the max, mean, and min values as an object
+    var circleValues = getCircleValues(map, attribute);
+	
+	for (var key in circleValues){
+        //get the radius
+        var radius = calcPropRadius(circleValues[key]);
+
+        //Step 3: assign the cy and r attributes
+        $('#'+key).attr({
+            cy: 160 - radius,
+            r: radius
+        });
+		
+		//Step 4: add legend text
+        $('#'+key+'-text').text(Math.round(circleValues[key]*100)/100 + " students");
+    };
+};
 
 //function to retrieve the data and place it on the map
 /*function createPropSymbols(data, map){
@@ -79,8 +189,8 @@ function pointToLayer(feature, latlng, attributes){
 
     //create marker options
     var options = {
-        fillColor: "#ff7800",
-        color: "#FF4500",
+        fillColor: "#1E90FF",
+        color: "#0066FF",
         weight: 1,
         opacity: 1,
         fillOpacity: 0.8
@@ -100,7 +210,7 @@ function pointToLayer(feature, latlng, attributes){
 
     //add formatted attribute to popup content string
     var year = attribute.split("_")[2];
-    popupContent += "<p><b>Enrolled at " + feature.properties.University + " in " + year + ":</b> " + feature.properties[attribute] + " students</p>";
+    popupContent += "<p><b>Enrolled at university in " + year + ":</b> " + feature.properties[attribute] + " students</p> <p><b>Major University:</b> " + feature.properties.University + "</p>";
 
     //bind the popup to the circle marker
     layer.bindPopup(popupContent, {
@@ -111,9 +221,15 @@ function pointToLayer(feature, latlng, attributes){
     layer.on({
         mouseover: function(){
             this.openPopup();
+			this.setStyle({fillColor: "#00CCFF"});
+			this.setStyle({color: "#00CCFF"});
+			this.setStyle({weight: 1});
         },
         mouseout: function(){
             this.closePopup();
+			this.setStyle({fillColor: "#1E90FF"});
+			this.setStyle({color: "#1E90FF"});
+			this.setStyle({weight: 1});
         },
 		/*click: function(){
             $("#panel").html(popupContent);
@@ -166,7 +282,7 @@ function createPropSymbols(data, map, attributes){
 
 function calcPropRadius(attValue) {
     //scale factor to adjust symbol size evenly
-    var scaleFactor = .05;
+    var scaleFactor = .045;
     //area based on attribute value and scale factor
     var area = attValue * scaleFactor;
     //radius calculated based on area
@@ -176,18 +292,41 @@ function calcPropRadius(attValue) {
 };
 
 function createSequenceControls(map, attributes){
-	$('#panel').append('<input class="range-slider" type="range">');
+    var SequenceControl = L.Control.extend({
+        options: {
+            position: 'bottomleft'
+        },
+
+        onAdd: function (map) {
+          // create the control container div with a particular class name
+            var container = L.DomUtil.create('div', 'sequence-control-container');
+			
+			//kill any mouse event listeners on the map
+            $(container).on('mousedown dblclick', function(e){
+                L.DomEvent.stopPropagation(e);
+            });
+
+            //create range input element (slider)
+            $(container).append('<input class="range-slider" type="range">');
+			 //add skip buttons
+            $(container).append('<button class="skip" id="reverse" title="Reverse">Reverse</button>');
+            $(container).append('<button class="skip" id="forward" title="Forward">Skip</button>');
+
+            return container;
+        }
+    });
+
+    map.addControl(new SequenceControl());
+	
 	$('.range-slider').attr({
         max: 6,
         min: 0,
         value: 0,
         step: 1
     });
-	$('#panel').append('<button class="skip" id="reverse">Reverse</button>');
-	$('#panel').append('<button class="skip" id="forward">Skip</button>');
 	
-	/*$('#reverse').html('<img src="img/arrow_left.png">');
-    $('#forward').html('<img src="img/arrow_right.png">');*/
+	$('#reverse').html('<img src="img/leftarrow_1.png">');
+    $('#forward').html('<img src="img/rightarrow_1.png">');
 
     $('.skip').click(function(){
         //get the old index value
@@ -207,6 +346,7 @@ function createSequenceControls(map, attributes){
         //Step 8: update slider
         $('.range-slider').val(index);
 		updatePropSymbols(map, attributes[index]);
+		updateLegend(map, attributes[index]);
     });
 
 
@@ -214,6 +354,7 @@ function createSequenceControls(map, attributes){
 
         var index = $(this).val();
 		updatePropSymbols(map, attributes[index]);
+		updateLegend(map, attributes[index]);
     });
 };
 
@@ -232,7 +373,8 @@ function updatePropSymbols(map, attribute){
 
             //add formatted attribute to panel content string
             var year = attribute.split("_")[2];
-            popupContent += "<p><b>Enrolled at " + layer.feature.properties.University + " in "+ year + ":</b> " + props[attribute] + " students</p>";
+            popupContent += "<p><b>Enrolled at university in "+ year + ":</b> " + props[attribute] + " students</p> <p><b>Major University:</b> " + props.University + "</p>";
+			
 
             //replace the layer popup
             layer.bindPopup(popupContent, {
@@ -263,7 +405,7 @@ function processData(data){
     return attributes;
 };
 
-//Step 2: Import GeoJSON data
+//get data. Pass through create functions
 function getData(map){
     //load the data
     $.ajax("data/Lab1Cities.geojson", {
@@ -273,6 +415,8 @@ function getData(map){
             //call function to create proportional symbols
             createPropSymbols(response, map, attributes);
 			createSequenceControls(map, attributes);
+			createLegend(map, attributes);
+			
         }
     });
 };
